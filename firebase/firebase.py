@@ -225,10 +225,11 @@ class FirebaseApplication(object):
     NAME_EXTENSION = '.json'
     URL_SEPERATOR = '/'
 
-    def __init__(self, dsn, authentication=None):
+    def __init__(self, dsn, authentication=None, token=None):
         assert dsn.startswith('https://'), 'DSN must be a secure URL'
         self.dsn = dsn
         self.authentication = authentication
+        self.token = token
 
     def _build_endpoint_url(self, url, name=None):
         """
@@ -260,6 +261,10 @@ class FirebaseApplication(object):
             user = self.authentication.get_user()
             params.update({'auth': user.firebase_auth_token})
             headers.update(self.authentication.authenticator.HEADERS)
+        
+        if self.token:
+            params.update({'auth': self.token})
+
 
     @http_connection(60)
     def get(self, url, name, params=None, headers=None, connection=None):
